@@ -2,36 +2,36 @@
 include('db_connect.php');
 include('auth.php');
 
-if(isset($_POST['course_id'])){
-    $course_id = $_POST['course_id'];
+if(isset($_POST['program_id'])){
+    $program_id = $_POST['program_id'];
     $faculty_id = $_POST['faculty_id'];
     
     // Start transaction
     $conn->begin_transaction();
 
     try {
-        // 1. Fetch all the classes under that course
-        $class_query = "SELECT class_id FROM class WHERE course_id = ? AND faculty_id = ?";
+        // 1. Fetch all the classes under that program
+        $class_query = "SELECT class_id FROM class WHERE program_id = ? AND faculty_id = ?";
         $class_stmt = $conn->prepare($class_query);
-        $class_stmt->bind_param("ii", $course_id, $faculty_id);
+        $class_stmt->bind_param("ii", $program_id, $faculty_id);
         $class_stmt->execute();
         $class_result = $class_stmt->get_result();
 
-        // Array to hold student IDs
+        // Array to hold class IDs
         $class_ids = [];
         while ($row = $class_result->fetch_assoc()) {
             $class_ids[] = $row['class_id'];
         }
         $class_stmt->close();
 
-        // 2. Fetch the assessments administered in that class
-        $assessment_query = "SELECT assessment_id FROM assessment WHERE course_id = ? AND faculty_id = ?";
+        // 2. Fetch the assessments administered in that program
+        $assessment_query = "SELECT assessment_id FROM assessment WHERE program_id = ? AND faculty_id = ?";
         $assessment_stmt = $conn->prepare($assessment_query);
-        $assessment_stmt->bind_param("ii", $course_id, $faculty_id);
+        $assessment_stmt->bind_param("ii", $program_id, $faculty_id);
         $assessment_stmt->execute();
         $assessment_result = $assessment_stmt->get_result();
 
-        // Array to hold administer IDs
+        // Array to hold assessment IDs
         $assessment_ids = [];
         while ($row = $assessment_result->fetch_assoc()) {
             $assessment_ids[] = $row['assessment_id'];
@@ -167,12 +167,12 @@ if(isset($_POST['course_id'])){
             $delete_class_stmt->close();
         }
 
-        // 6. Delete the course itself
-        $delete_course_query = "DELETE FROM course WHERE course_id = ? AND faculty_id = ?";
-        $delete_course_stmt = $conn->prepare($delete_course_query);
-        $delete_course_stmt->bind_param('ii', $course_id, $faculty_id);
-        $delete_course_stmt->execute();
-        $delete_course_stmt->close();
+        // 6. Delete the program itself
+        $delete_program_query = "DELETE FROM program WHERE program_id = ? AND faculty_id = ?";
+        $delete_program_stmt = $conn->prepare($delete_program_query);
+        $delete_program_stmt->bind_param('ii', $program_id, $faculty_id);
+        $delete_program_stmt->execute();
+        $delete_program_stmt->close();
 
         // Commit transaction
         $conn->commit();
@@ -185,5 +185,5 @@ if(isset($_POST['course_id'])){
     }
 
     $conn->close();
-    }
+}
 ?>

@@ -32,47 +32,48 @@
         <div class="scrollable-content">  
             <div id="assessment-tab" class="tab-content active">
                 <?php
+                // Update: Use program table and course_name column
                 $qry = $conn->query("
-                    SELECT a.*, c.course_name
+                    SELECT a.*, p.program_name
                     FROM assessment a 
-                    JOIN course c ON a.course_id = c.course_id 
+                    JOIN program p ON a.program_id = p.program_id
                     WHERE a.faculty_id = '".$_SESSION['login_id']."'
-                    ORDER BY c.course_name ASC, a.subject ASC, a.date_updated DESC
+                    ORDER BY p.program_name ASC, a.course_name ASC, a.date_updated DESC
                 ");
                 
-                $current_course = '';
-                $current_subject = '';
+                $current_program = '';
+                $current_course_name = '';
 
                 if ($qry && $qry->num_rows > 0) {
                     while ($row = $qry->fetch_assoc()) {
+                        $program_name = htmlspecialchars($row['program_name']);
                         $course_name = htmlspecialchars($row['course_name']);
-                        $subject_name = htmlspecialchars($row['subject']);
                         $assessment_name = htmlspecialchars($row['assessment_name']);
                         $topic = htmlspecialchars($row['topic']);
                         $assessment_id = $row['assessment_id'];
                         
-                        if ($course_name !== $current_course) {
-                            if ($current_course !== '') { ?>
+                        if ($program_name !== $current_program) {
+                            if ($current_program !== '') { ?>
                                 </div> 
                             <?php } ?>
                             <div class="course-section">
-                                <h2><?php echo $course_name; ?></h2>
+                                <h2><?php echo $program_name; ?></h2>
                                 <?php 
-                                $current_course = $course_name;
-                                $current_subject = '';
+                                $current_program = $program_name;
+                                $current_course_name = '';
                             }
 
-                            if ($subject_name !== $current_subject) {
-                                if ($current_subject !== '') { ?>
+                            if ($course_name !== $current_course_name) {
+                                if ($current_course_name !== '') { ?>
                                     </div>
                                 <?php } ?>
                                 <div class="content-separator">
-                                    <span class="content-name"><?php echo $subject_name; ?></span>
+                                    <span class="content-name"><?php echo $course_name; ?></span>
                                     <hr class="separator-line">
                                 </div>
                                 <div class="assessment-container">
                                 <?php 
-                                $current_subject = $subject_name;
+                                $current_course_name = $course_name;
                             } ?>
                             
                             <div class="assessment-card">
@@ -90,7 +91,7 @@
                                             <a href="#" class="delete_assessment" 
                                                 data-id="<?php echo $assessment_id ?>"
                                                 data-name="<?php echo $assessment_name ?>"
-                                                data-subject="<?php echo $subject_name ?>">
+                                                data-course-name="<?php echo $course_name ?>">
                                                 <span class="material-symbols-outlined">delete</span>
                                                 Delete
                                             </a>
@@ -101,9 +102,9 @@
                                     <div class="assessment-actions">
                                         <a id="manage" class="tertiary-button" href="manage_assessment.php?assessment_id=<?php echo $assessment_id ?>">Manage</a>
                                         <button id="administer" class="main-button" 
-                                            data-course-id="<?php echo $row['course_id']; ?>" 
-                                            data-course-name="<?php echo $row['course_name']; ?>" 
-                                            data-subject="<?php echo htmlspecialchars($row['subject']); ?>" 
+                                            data-program-id="<?php echo $row['program_id']; ?>" 
+                                            data-program-name="<?php echo $row['program_name']; ?>" 
+                                            data-course-name="<?php echo htmlspecialchars($row['course_name']); ?>" 
                                             data-mode="<?php echo htmlspecialchars($row['assessment_mode']); ?>" 
                                             data-id="<?php echo $row['assessment_id']; ?>"
                                             data-assessment-name="<?php echo htmlspecialchars($row['assessment_name']); ?>">
@@ -117,8 +118,8 @@
                 else {
                     echo '<div class="no-records" style="grid-column: 1/-1;"> No assessments have been created yet </div>';
                 } ?>
-                        </div> <!-- Close the last subject card container -->
-                    </div> <!-- Close the last course section -->
+                        </div> <!-- Close the last course_name card container -->
+                    </div> <!-- Close the last program section -->
                 </div>
             </div> 
                    
@@ -163,21 +164,22 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Select Course</label>
-                                <select name="course_id" id="course_id" required="required" class="popup-input">
-                                    <option value="" disabled selected>Select Course</option>
+                                <label>Select Program</label>
+                                <select name="program_id" id="program_id" required="required" class="popup-input">
+                                    <option value="" disabled selected>Select Program</option>
                                     <?php
-                                    $course_qry = $conn->query("SELECT * FROM course WHERE faculty_id = '".$_SESSION['login_id']."'");
-                                    while($course_row = $course_qry->fetch_assoc()) {
-                                        echo "<option value='".$course_row['course_id']."'>".$course_row['course_name']."</option>";
+                                    // Update: Use program table
+                                    $program_qry = $conn->query("SELECT * FROM program WHERE faculty_id = '".$_SESSION['login_id']."'");
+                                    while($program_row = $program_qry->fetch_assoc()) {
+                                        echo "<option value='".$program_row['program_id']."'>".$program_row['program_name']."</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Select Course Subject</label>
-                                <select name="subject" id="subject" required="required" class="popup-input">
-                                    <option value="" disabled selected>Select Subject</option>
+                                <label>Select Course Name</label>
+                                <select name="course_name" id="course_name" required="required" class="popup-input">
+                                    <option value="" disabled selected>Select Course Name</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -200,16 +202,16 @@
 
                     <form id="administer-assessment-form">
                         <input type="hidden" name="assessment_id" id="assessment_id_hidden" />
-                        <input type="hidden" name="course_id" id="course_id_hidden" />
+                        <input type="hidden" name="program_id" id="program_id_hidden" />
                         <div class="modal-body">
                             <div id="msg1"></div>
                             <div class="form-group">
-                                <label for="administer_course">Course</label>
-                                <input type="text" id="administer_course" class="popup-input" readonly />
+                                <label for="administer_program">Program</label>
+                                <input type="text" id="administer_program" class="popup-input" readonly />
                             </div>
                             <div class="form-group">
-                                <label for="administer_subject">Subject</label>
-                                <input type="text" id="administer_subject" class="popup-input" readonly />
+                                <label for="administer_course_name">Course Name</label>
+                                <input type="text" id="administer_course_name" class="popup-input" readonly />
                             </div>
                             <div class="form-group">
                                 <label for="administer_mode">Mode</label>
@@ -266,21 +268,21 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Select Course</label>
-                                <select name="course_id" id="edit_course_id" required="required" class="popup-input">
-                                    <option value="" disabled>Select Course</option>
+                                <label>Select Program</label>
+                                <select name="program_id" id="edit_program_id" required="required" class="popup-input">
+                                    <option value="" disabled>Select Program</option>
                                     <?php
-                                    $course_qry = $conn->query("SELECT * FROM course WHERE faculty_id = '".$_SESSION['login_id']."'");
-                                    while($course_row = $course_qry->fetch_assoc()) {
-                                        echo "<option value='".$course_row['course_id']."'>".$course_row['course_name']."</option>";
+                                    $program_qry = $conn->query("SELECT * FROM program WHERE faculty_id = '".$_SESSION['login_id']."'");
+                                    while($program_row = $program_qry->fetch_assoc()) {
+                                        echo "<option value='".$program_row['program_id']."'>".$program_row['program_name']."</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Select Course Subject</label>
-                                <select name="subject" id="edit_subject" required="required" class="popup-input">
-                                    <option value="" disabled>Select Subject</option>
+                                <label>Select Course Name</label>
+                                <select name="course_name" id="edit_course_name" required="required" class="popup-input">
+                                    <option value="" disabled>Select Course Name</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -301,7 +303,7 @@
                     <button class="popup-close">&times;</button>
                     <h2 id="delete-assessment-title" class="popup-title">Delete Assessment</h2>
                     <div class="modal-body">
-                        <p class="popup-message" id="delete-message">Are you sure you want to delete <strong id="assessment_name"></strong> from <strong id="assessment_subject"></strong>?</p>
+                        <p class="popup-message" id="delete-message">Are you sure you want to delete <strong id="assessment_name"></strong> from <strong id="assessment_course_name"></strong>?</p>
                     </div>
                     <div class="modal-footer">
                         <button class="tertiary-button close-popup" type="button">Cancel</button>
@@ -311,7 +313,7 @@
             </div>
         </div>
 
-            <script>
+        <script>
           $(document).ready(function() {
             // Handles Popups
             function showPopup(popupId) {
@@ -380,19 +382,19 @@
             });
 
             // Load subjects based on selected course
-            $('#course_id').change(function() {
-                var course_id = $(this).val();
-                if (course_id) {
+            $('#program_id').change(function() {
+                var program_id = $(this).val();
+                if (program_id) {
                     $.ajax({
                         url: 'get_subjects.php',
                         method: 'POST',
-                        data: { course_id: course_id },
+                        data: { program_id: program_id },
                         success: function(response) {
-                            $('#subject').html(response); //  subjects dropdown
+                            $('#course_name').html(response); //  subjects dropdown
                         }
                     });
                 } else {
-                    $('#subject').html('<option value="" disabled>Select Subject</option>'); // Clear subjects dropdown
+                    $('#course_name').html('<option value="" disabled>Select Course Name</option>'); // Clear subjects dropdown
                 }
             });
 
@@ -432,9 +434,9 @@
             // Show modal when "Administer Assessment" is clicked
             $(document).on('click', '#administer', function() {
                 var assessmentId = $(this).data('id');      // Get the assessment ID
-                var courseId = $(this).data('course-id');   // Get the course ID
-                var courseName = $(this).data('course-name'); // Get the course name
-                var subjectName = $(this).data('subject');  // Get the subject name
+                var programId = $(this).data('program-id');   // Get the program ID
+                var programName = $(this).data('program-name'); // Get the program name
+                var courseName = $(this).data('course-name');  // Get the course name
                 var mode = $(this).data('mode');            // Get the assessment mode
                 var assessmentName = $(this).data('assessment-name') // Get the assessment name
 
@@ -452,20 +454,20 @@
 
                             // Set the hidden fields
                             $('#administer-assessment-popup #assessment_id_hidden').val(assessmentId);
-                            $('#administer-assessment-popup #course_id_hidden').val(courseId);
+                            $('#administer-assessment-popup #program_id_hidden').val(programId);
                             $('#administer-assessment-popup #assessment_name_hidden').val(assessmentName);
 
                             // Set other fields
-                            $('#administer-assessment-popup #administer_course').val(courseName); // Display course name
-                            $('#administer-assessment-popup #administer_subject').val(subjectName);
+                            $('#administer-assessment-popup #administer_program').val(programName); // Display program name
+                            $('#administer-assessment-popup #administer_course_name').val(courseName);
                             $('#administer-assessment-popup #administer_mode').val(mode);
 
-                            // Load classes based on selected course and subject
-                            if (courseId && subjectName) {
+                            // Load classes based on selected program and course
+                            if (programId && courseName) {
                                 $.ajax({
                                     url: 'administer_class.php',
                                     method: 'POST',
-                                    data: { course_id: courseId, subject: subjectName },
+                                    data: { program_id: programId, course_name: courseName },
                                     success: function(response) {
                                         $('#administer-assessment-popup #administer_class_id').html(response); // Populate classes dropdown
 
@@ -541,7 +543,7 @@
                             $('#administer-tab').addClass('active'); // Add 'active' class to the tab content
                             
                             // Set the Tab Name
-                            $('#administer-tab-link').text($('#administer_class_name_hidden').val() + ' | ' + $('#administer_subject').val() + ' | ' + $('#assessment_name_hidden').val());
+                            $('#administer-tab-link').text($('#administer_class_name_hidden').val() + ' | ' + $('#administer_course_name').val() + ' | ' + $('#assessment_name_hidden').val());
 
                             // Load the content for the Administer tab via AJAX
                             $.ajax({
@@ -626,17 +628,17 @@
                         $('#edit_assessment_name').val(data.assessment_name);
                         $('#edit_assessment_type').val(data.assessment_type);
                         $('#edit_assessment_mode').val(data.assessment_mode);
-                        $('#edit_course_id').val(data.course_id);
+                        $('#edit_program_id').val(data.program_id);
                         $('#edit_topic').val(data.topic);
                         
                         // Populate subjects dropdown
                         $.ajax({
                             url: 'get_subjects.php',
                             method: 'POST',
-                            data: { course_id: data.course_id },
+                            data: { program_id: data.program_id },
                             success: function(response) {
-                                $('#edit_subject').html(response);
-                                $('#edit_subject').val(data.subject); // Set the selected subject
+                                $('#edit_course_name').html(response);
+                                $('#edit_course_name').val(data.course_name); // Set the selected course name
                             }
                         });
 
@@ -704,12 +706,12 @@
             $(document).on('click', '.delete_assessment', function() {
                 var assessmentId = $(this).data('id');
                 var assessmentName = $(this).data('name');
-                var subject = $(this).data('subject');
+                var courseName = $(this).data('course-name');
                 
                 $('#confirm_delete_btn').data('id', assessmentId); // Set assessment ID on confirm button
                 showPopup('delete-assessment-popup');
                 $('#delete-assessment-popup #assessment_name').html(assessmentName);
-                $('#delete-assessment-popup #assessment_subject').html(subject);
+                $('#delete-assessment-popup #assessment_course_name').html(courseName);
             });
 
             // Confirm delete action

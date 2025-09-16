@@ -32,11 +32,11 @@
         <div id="courses-tab" class="tab-content scrollable-content active">
             <div class="course-container">
                 <?php
-                $qry = $conn->query("SELECT * FROM course WHERE faculty_id = '".$_SESSION['login_id']."' ORDER BY course_name ASC");
+                $qry = $conn->query("SELECT * FROM program WHERE faculty_id = '".$_SESSION['login_id']."' ORDER BY program_name ASC");
                 if ($qry->num_rows > 0) {
                     while ($row = $qry->fetch_assoc()) {
-                        $course_id =  $row['course_id'];
-                        $result = $conn->query("SELECT COUNT(*) as classCount FROM class WHERE course_id = '$course_id'");
+                        $program_id =  $row['program_id'];
+                        $result = $conn->query("SELECT COUNT(*) as classCount FROM class WHERE program_id = '$program_id'");
                         $classCountRow = $result->fetch_assoc();
                         $classCount = $classCountRow['classCount'];
                 ?>
@@ -49,22 +49,22 @@
                             <div class="meatball-menu">
                                 <div class="arrow-up"></div>
                                 <a href="#" class="edit_course" 
-                                    data-id="<?php echo $row['course_id'] ?>" 
-                                    data-name="<?php echo $row['course_name'] ?>">
+                                    data-id="<?php echo $row['program_id'] ?>" 
+                                    data-name="<?php echo $row['program_name'] ?>">
                                     <span class="material-symbols-outlined">Edit</span>
                                     Edit</a>
                                 <a href="#" class="delete_course" 
-                                    data-id="<?php echo $row['course_id'] ?>" 
-                                    data-name="<?php echo $row['course_name'] ?>">
+                                    data-id="<?php echo $row['program_id'] ?>" 
+                                    data-name="<?php echo $row['program_name'] ?>">
                                     <span class="material-symbols-outlined">delete</span>
                                     Delete</a>
                             </div>
                         </div>
-                        <div class="course-card-title"><?php echo $row['course_name'] ?></div>
+                        <div class="course-card-title"><?php echo $row['program_name'] ?></div>
                         <div class="course-card-text"><?php echo $classCount ?> Class(es)</div>
                         <div class="course-actions">
-                            <button id="viewClasses" class="tertiary-button viewClasses" data-id="<?php echo $row['course_id'] ?>" data-name="<?php echo $row['course_name'] ?>" type="button">Classes</button>
-                            <button id="viewCourseDetails" class="main-button" data-id="<?php echo $row['course_id'] ?>" type="button">View Details</button>
+                            <button id="viewClasses" class="tertiary-button viewClasses" data-id="<?php echo $row['program_id'] ?>" data-name="<?php echo $row['program_name'] ?>" type="button">Classes</button>
+                            <button id="viewCourseDetails" class="main-button" data-id="<?php echo $row['program_id'] ?>" type="button">View Details</button>
                         </div>
                     </div>
                 </div>
@@ -83,14 +83,14 @@
             </div>
         </div>
 
-        <!-- Course Details Modal -->
+        <!-- Program Details Modal -->
         <div id="program-details-popup" class="popup-overlay"> 
             <div id="program-details-modal-content" class="popup-content details-popup" role="document">
                 <button class="popup-close">&times;</button>
                 <h2 id="program-details-title" class="popup-title">Program Details</h2>
 
                 <div class="modal-body" id="courseDetailsBody">
-                    <!-- Course details will be dynamically loaded here -->
+                    <!-- Program details will be dynamically loaded here -->
                 </div>
                 <div class="modal-footer">
                     <button class="tertiary-button close-popup">Close</button>
@@ -130,9 +130,9 @@
                         <div id="msg"></div>
                         <div class="form-group">
                             <label>Program Name</label>
-                            <input type="hidden" name="course_id" id="course_id_container"/>
+                            <input type="hidden" name="program_id" id="program_id_container"/>
                             <input type="hidden" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
-                            <input type="text" name="course_name" required="required" class="popup-input" />
+                            <input type="text" name="program_name" required="required" class="popup-input" />
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -154,9 +154,9 @@
                         <div id="msg"></div>
                         <div class="form-group">
                             <label>Program Name</label>
-                            <input type="hidden" name="course_id" id="course_id"/>
+                            <input type="hidden" name="program_id" id="program_id"/>
                             <input type="hidden" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
-                            <input type="text" name="course_name" required="required" class="popup-input" value=""/>
+                            <input type="text" name="program_name" required="required" class="popup-input" value=""/>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -177,8 +177,8 @@
                     <div class="modal-body" id="delete-modal-body">
                         <div id="msg"></div>
                         <div class="form-group">
-                            <p id="delete-message" class="popup-message"> Are you sure you want to delete  <strong id="modal_course_name"></strong>?</p>
-                            <input type="hidden" name="course_id" id="course_id"/>
+                            <p id="delete-message" class="popup-message"> Are you sure you want to delete <strong id="modal_program_name"></strong>?</p>
+                            <input type="hidden" name="program_id" id="program_id"/>
                             <input type="hidden" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
                         </div>
                     </div>
@@ -200,7 +200,7 @@
                 <form id='class-form' class="popup-form">
                     <div class="modal-body">
                         <div id="msg"></div>
-                        <input type="hidden" name="course_id" />
+                        <input type="hidden" name="program_id" />
                         <input type="hidden" name="class_id" />
                         <input type="hidden" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
                         <div class="form-group">
@@ -208,8 +208,8 @@
                             <input type="text" name="class_name" required="required" placeholder="Course, Year, and Section (ex. BSIT 1-1)" class="popup-input" />
                         </div>
                         <div class="form-group">
-                            <label>Course Subject</label>
-                            <input type="text" name="subject" required="required" class="popup-input" />
+                            <label>Course Name</label>
+                            <input type="text" name="course_name" required="required" class="popup-input" />
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -230,15 +230,15 @@
                     <div class="modal-body">
                         <div id="msg"></div>
                         <div class="form-group">
-                            <input type="hidden" id="course_id" />
+                            <input type="hidden" id="program_id" />
                             <input type="hidden" name="class_id" id="class_id"/>
                             <input type="hidden" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
                             <label>Class Name</label>
                             <input type="text" name="class_name" required="required" class="popup-input" value=""/>
                         </div>
                         <div class="form-group">
-                            <label>Course Subject</label>
-                            <input type="text" name="subject" required="required" class="popup-input" value=""/>
+                            <label>Course Name</label>
+                            <input type="text" name="course_name" required="required" class="popup-input" value=""/>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -259,8 +259,8 @@
                     <div class="modal-body">
                         <div id="msg"></div>
                         <div class="form-group">
-                            <p id="delete-message" class="popup-message"> Are you sure you want to delete <strong id="modal_class_name"></strong> (<strong id="modal_subject"></strong>)?</p>
-                            <input type="hidden" id="course_id" />
+                            <p id="delete-message" class="popup-message"> Are you sure you want to delete <strong id="modal_class_name"></strong> (<strong id="modal_course_name"></strong>)?</p>
+                            <input type="hidden" id="program_id" />
                             <input type="hidden" name="class_id" id="class_id"/>
                             <input type="hidden" id="faculty_id" name="faculty_id" value="<?php echo $_SESSION['login_id']; ?>" />
                         </div>
@@ -283,7 +283,7 @@
                 <div class="modal-body">
                     <div id="msg"></div>
                     <div class="form-group">
-                        <h3 style="font-weight: bold;"><a id="modal_class_name"></a> (<a id="modal_subject"></a>)</h3>
+                        <h3 style="font-weight: bold;"><a id="modal_class_name"></a> (<a id="modal_course_name"></a>)</h3>
                         <h1 id="modal_code"></h1>
                     </div>
                 </div>
@@ -301,11 +301,11 @@
                 $('#' + popupId).css('display', 'none');
             }
 
-            function getClasses(course_id) {
+            function getClasses(program_id) {
                 $.ajax({
                     url: 'get_classes.php',
                     method: 'POST',
-                    data: { course_id: course_id },
+                    data: { program_id: program_id },
                     success: function(response) {
                         $('#class-container').html(response);
                         updateMeatballMenu();
@@ -395,30 +395,28 @@
                 showPopup('add-program-popup');
             });
 
-            // When edit button (course) is clicked
+            // When edit button (program) is clicked
             $(document).on('click', '.edit_course', function() {
-                var courseId = $(this).data('id');
-                var courseName = $(this).data('name');
+                var programId = $(this).data('id');
+                var programName = $(this).data('name');
 
                 $('#msg').html('');
-                $('#edit-program-popup #course_id').val(courseId);
-                $('#edit-program-popup input[name="course_name"]').val(courseName);
+                $('#edit-program-popup #program_id').val(programId);
+                $('#edit-program-popup input[name="program_name"]').val(programName);
                 $('#edit-program-popup #edit-course-form');
                 showPopup('edit-program-popup')
             });
 
                 //When delete button is clicked
                 $('.delete_course').click(function() {
-                    var courseId = $(this).data('id');
-                    var courseName = $(this).data('name');
-
-                    console.log(courseName)
+                    var programId = $(this).data('id');
+                    var programName = $(this).data('name');
 
                     // Open a modal for deleting
                     $('#msg').html('');
                     $('#delete-program-popup #delete-course-form').get(0).reset();
-                    $('#delete-program-popup #course_id').val(courseId);
-                    $('#delete-program-popup #modal_course_name').text(courseName);
+                    $('#delete-program-popup #program_id').val(programId);
+                    $('#delete-program-popup #modal_program_name').text(programName);
                     showPopup('delete-program-popup');
                 });
 
@@ -431,46 +429,46 @@
 
             // When edit button (class) is clicked
             $(document).on('click', '.edit_class', function() {
-                var courseId = $(this).data('course-id');
+                var programId = $(this).data('program-id');
                 var classId = $(this).data('class-id');
                 var className = $(this).data('class-name');
-                var subject = $(this).data('subject');
+                var courseName = $(this).data('course-name');
 
                 $('#msg').html('');
                 $('#edit-class-popup .modal-title').html('Edit Class');
                 $('#edit-class-popup #edit-class-form').get(0).reset();
-                $('#edit-class-popup #course_id').val(courseId);
+                $('#edit-class-popup #program_id').val(programId);
                 $('#edit-class-popup #class_id').val(classId);
                 $('#edit-class-popup input[name="class_name"]').val(className);
-                $('#edit-class-popup input[name="subject"]').val(subject);
+                $('#edit-class-popup input[name="course_name"]').val(courseName);
                 showPopup('edit-class-popup');
             });
 
             //When delete button (class) is clicked
             $(document).on('click', '.delete_class', function() {
-                var courseId = $(this).data('course-id');
+                var programId = $(this).data('program-id');
                 var classId = $(this).data('class-id');
                 var className = $(this).data('class-name');
-                var subject = $(this).data('subject');
+                var courseName = $(this).data('course-name');
 
                 //Open a modal for deleting
                 $('#msg').html('');
                 $('#delete-class-popup #delete-class-form').get(0).reset();
-                $('#delete-class-popup #course_id').val(courseId);
+                $('#delete-class-popup #program_id').val(programId);
                 $('#delete-class-popup #class_id').val(classId);
                 $('#modal_class_name').text(className);
-                $('#modal_subject').text(subject);
+                $('#modal_course_name').text(courseName);
                 showPopup('delete-class-popup');
             });
 
             $(document).on('click', '.get_code', function() { 
                 var classId = $(this).data('class-id');
                 var className = $(this).data('class-name');
-                var subject = $(this).data('subject');
+                var courseName = $(this).data('course-name');
 
                 $('#msg').html('');
                 $('#class-code-popup #modal_class_name').text(className);
-                $('#class-code-popup #modal_subject').text(subject);
+                $('#class-code-popup #modal_course_name').text(courseName);
 
                 // Fetch the code dynamically using AJAX
                 $.ajax({
@@ -493,7 +491,7 @@
                 });
             });
 
-            // Handle Edit Form (Course)
+            // Handle Edit Form (Program)
             $('#edit-course-form').submit(function(event) {
                 event.preventDefault();
                 closePopup('edit-program-popup');
@@ -523,7 +521,7 @@
                         } else {
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'Failed to save course: ' + response.msg,
+                                text: 'Failed to save program: ' + response.msg,
                                 icon: 'error',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
@@ -541,7 +539,7 @@
                     error: function() {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'An error occurred while saving course details.',
+                            text: 'An error occurred while saving program details.',
                             icon: 'error',
                             confirmButtonText: 'OK',
                             allowOutsideClick: false,
@@ -558,7 +556,7 @@
                 });
             });
 
-            // Handle Delete Form (Course)
+            // Handle Delete Form (Program)
             $('#delete-course-form').submit(function(event) {
                 event.preventDefault();
                 closePopup('delete-program-popup');
@@ -627,7 +625,7 @@
             $('#edit-class-form').submit(function(event) {
                 event.preventDefault();
                 closePopup('edit-class-popup');
-                var course_id = $('#edit-class-popup #course_id').val();
+                var program_id = $('#edit-class-popup #program_id').val();
 
                 $.ajax({
                     url: './save_editted_class.php',
@@ -638,7 +636,7 @@
                         if (response.status == 1) {
                             Swal.fire({
                                 title: 'Success!',
-                                text: 'The program was successfully editted!',
+                                text: 'The class was successfully editted!',
                                 icon: 'success',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
@@ -648,7 +646,7 @@
                                 }
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    getClasses(course_id);
+                                    getClasses(program_id);
                                 }
                             });
                         } else {
@@ -668,7 +666,7 @@
                     error: function() {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'An error occurred while editting class details.',
+                            text: 'An error occurred while editing class details.',
                             icon: 'error',
                             confirmButtonText: 'OK',
                             allowOutsideClick: false,
@@ -681,59 +679,44 @@
                 });
             });
 
-             // Handle Delete Form (Class)
-             $('#delete-class-form').submit(function(event) {
-                    event.preventDefault();
-                    closePopup('delete-class-popup');
-                    var course_id = $('#delete-class-popup #course_id').val();
-                    var faculty_id = $('#delete-class-popup #faculty_id').val();
-                    var class_id = $('#delete-class-popup #class_id').val();
+            // Handle Delete Form (Class)
+            $('#delete-class-form').submit(function(event) {
+                event.preventDefault();
+                closePopup('delete-class-popup');
+                var program_id = $('#delete-class-popup #program_id').val();
+                var faculty_id = $('#delete-class-popup #faculty_id').val();
+                var class_id = $('#delete-class-popup #class_id').val();
 
-                    $.ajax({
-                        url: 'delete_class.php', 
-                        method: 'POST',
-                        data: {
-                            course_id: course_id,
-                            class_id: class_id,
-                            faculty_id: faculty_id 
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status == 1) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: response.msg,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK',
-                                    allowOutsideClick: false,
-                                    customClass: {
-                                        popup: 'popup-content',
-                                        confirmButton: 'secondary-button'
-                                    }
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        getClasses(course_id);
-                                    }
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Error: ' + response.msg,
-                                    icon: 'error',
-                                    confirmButtonText: 'OK',
-                                    allowOutsideClick: false,
-                                    customClass: {
-                                        popup: 'popup-content',
-                                        confirmButton: 'secondary-button'
-                                    }
-                                });
-                            }
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log("Request failed: " + textStatus + ", " + errorThrown);
+                $.ajax({
+                    url: 'delete_class.php', 
+                    method: 'POST',
+                    data: {
+                        program_id: program_id,
+                        class_id: class_id,
+                        faculty_id: faculty_id 
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 1) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.msg,
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false,
+                                customClass: {
+                                    popup: 'popup-content',
+                                    confirmButton: 'secondary-button'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    getClasses(program_id);
+                                }
+                            });
+                        } else {
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'An error occurred while deleting the class.',
+                                text: 'Error: ' + response.msg,
                                 icon: 'error',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
@@ -743,16 +726,31 @@
                                 }
                             });
                         }
-                    });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log("Request failed: " + textStatus + ", " + errorThrown);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while deleting the class.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'popup-content',
+                                confirmButton: 'secondary-button'
+                            }
+                        });
+                    }
                 });
+            });
 
-            // View course details button
+            // View program details button
             $(document).on('click', '#viewCourseDetails', function() {
-                var course_id = $(this).attr('data-id');
+                var program_id = $(this).attr('data-id');
                 $.ajax({
                     url: 'get_course_details.php',
                     method: 'GET',
-                    data: { course_id: course_id },
+                    data: { program_id: program_id },
                     success: function(response) {
                         $('#program-details-popup #courseDetailsBody').html(response);
                         // $('#course_details').modal('show');
@@ -760,7 +758,7 @@
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         console.log("Request failed: " + textStatus + ", " + errorThrown);
-                        alert('An error occurred while fetching course details.');
+                        alert('An error occurred while fetching program details.');
                     }
                 });
             });
@@ -822,7 +820,7 @@
                 }
             });
 
-            // Saving new course
+            // Saving new program
             $('#course-form').submit(function(e) {
                 e.preventDefault();
                 $('#course-frm [name="save"]').attr('disabled', true).html('Saving...');
@@ -878,25 +876,25 @@
 
             // Handle Classes button click
             $('.viewClasses').click(function() {
-                var course_id = $(this).attr('data-id');
-                var course_name = $(this).attr('data-name');
+                var program_id = $(this).attr('data-id');
+                var program_name = $(this).attr('data-name');
 
                 // Show the Classes tab and set the course name
                 $('#classes-tab-link').show().click();
-                $('#classes-tab-link').text(course_name);
+                $('#classes-tab-link').text(program_name);
 
                 // Fetch and display classes associated with the course
-                getClasses(course_id);
+                getClasses(program_id);
 
                 // Set the hidden course_id field in the add class form
-                $('#add-class-popup input[name="course_id"]').val(course_id);
+                $('#add-class-popup input[name="program_id"]').val(program_id);
             });
 
             // AJAX form submission for adding a class
             $('#class-form').submit(function(e) {
                 e.preventDefault();
                 closePopup('add-class-popup');
-                var course_id = $('#add-class-popup input[name="course_id"]').val();
+                var program_id = $('#add-class-popup input[name="program_id"]').val();
                 
                 $.ajax({
                     url: 'save_class.php',
@@ -907,7 +905,7 @@
                         if (response.status === 1) {
                             Swal.fire({
                                 title: 'Success!',
-                                text: 'The program was successfully editted!',
+                                text: 'The class was successfully added!',
                                 icon: 'success',
                                 confirmButtonText: 'OK',
                                 allowOutsideClick: false,
@@ -917,7 +915,7 @@
                                 }
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    getClasses(course_id);
+                                    getClasses(program_id);
                                 }
                             });
                         } else {

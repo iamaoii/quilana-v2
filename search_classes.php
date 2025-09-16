@@ -6,7 +6,7 @@ if (isset($_GET['query']) && isset($_GET['student_id'])) {
     $search = mysqli_real_escape_string($conn, $_GET['query']);
     $student_id = mysqli_real_escape_string($conn, $_GET['student_id']);
     
-    $query = "SELECT c.class_id, c.subject, c.class_name, f.firstname, f.lastname 
+    $query = "SELECT c.class_id, c.course_name, c.class_name, f.firstname, f.lastname 
               FROM student_enrollment e
               JOIN class c ON e.class_id = c.class_id
               JOIN faculty f ON c.faculty_id = f.faculty_id
@@ -16,7 +16,7 @@ if (isset($_GET['query']) && isset($_GET['student_id'])) {
     // Search Conditions
     if (!empty($search)) {
         $query .= " AND (
-            c.subject LIKE '%$search%' OR 
+            c.course_name LIKE '%$search%' OR 
             c.class_name LIKE '%$search%' OR 
             CONCAT(f.firstname, ' ', f.lastname) LIKE '%$search%'
         )";
@@ -46,7 +46,7 @@ if (isset($_GET['query']) && isset($_GET['student_id'])) {
                             Report</a>
                     </div>
                 </div>
-                <div class="class-card-title"><?php echo $row['subject'] ?></div>
+                <div class="class-card-title"><?php echo $row['course_name'] ?></div>
                 <div class="class-card-text">Section: <?php echo $row['class_name'] ?> <br>Professor: <?php echo $row['firstname'] . ' ' . $row['lastname'] ?></div>
                 <div class="class-actions">
                     <button id="viewClassDetails_<?php echo $row['class_id']; ?>" class="main-button" data-id="<?php echo $row['class_id'] ?>" type="button">View Class</button>

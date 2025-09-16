@@ -2,12 +2,12 @@
 include('db_connect.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $course_id = isset($_POST['course_id']) ? intval($_POST['course_id']) : null;
-    $subject = isset($_POST['subject']) ? $_POST['subject'] : '';
+    $program_id = isset($_POST['program_id']) ? intval($_POST['program_id']) : null;
+    $course_name = isset($_POST['course_name']) ? $_POST['course_name'] : '';
 
-    if ($course_id && $subject) {
-        $stmt = $conn->prepare("SELECT class_id, class_name FROM class WHERE course_id = ? AND subject = ?");
-        $stmt->bind_param("is", $course_id, $subject);  // 'i' for integer, 's' for string
+    if ($program_id && $course_name) {
+        $stmt = $conn->prepare("SELECT class_id, class_name FROM class WHERE program_id = ? AND course_name = ?");
+        $stmt->bind_param("is", $program_id, $course_name);  // 'i' for integer, 's' for string
         $stmt->execute();
         $result = $stmt->get_result();
 

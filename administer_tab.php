@@ -361,7 +361,7 @@
                                         <h2>Mode was not chosen</h2>
                                 <?php }
                             ?>
-                            <h3><?php echo htmlspecialchars($administer['class_name']) . ' (' . htmlspecialchars($administer['subject']) . ')'?> </h3>
+                            <h3><?php echo htmlspecialchars($administer['class_name']) . ' (' . htmlspecialchars($administer['course_name']) . ')'?> </h3>
                         </div>
 
                         <div class='top-right-container'>

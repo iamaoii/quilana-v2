@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($assessment_id) {
         $stmt = $conn ->prepare("
-            SELECT course_id, subject
+            SELECT program_id, course_name
             FROM assessment
             WHERE assessment_id = ?
         ");
@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $assessment_result = $stmt->get_result();
 
         if ($row = $assessment_result->fetch_assoc()) {
-            $course_id = $row['course_id'];
-            $subject = $row['subject'];
+            $program_id = $row['program_id'];
+            $course_name = $row['course_name'];
 
             $stmt = $conn->prepare("
                 SELECT c.class_id, c.class_name 
                 FROM class c 
-                WHERE c.course_id = ? 
-                AND c.subject = ? 
+                WHERE c.program_id = ? 
+                AND c.course_name = ? 
                 AND NOT EXISTS (
                     SELECT 1 
                     FROM administer_assessment 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     AND assessment_id = ? 
                 )
             ");
-            $stmt->bind_param("isi", $course_id, $subject, $assessment_id);
+            $stmt->bind_param("isi", $program_id, $course_name, $assessment_id);
             $stmt->execute();
             $classes_result = $stmt->get_result();
 

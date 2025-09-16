@@ -14,7 +14,7 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'quizzes';
 $assessment_type = ($type === 'quizzes') ? 1 : 2;
 
 // Get student's enrolled classes
-$classes_query = $conn->query("SELECT c.class_id, c.subject 
+$classes_query = $conn->query("SELECT c.class_id, c.course_name 
                               FROM class c 
                               JOIN student_enrollment s ON c.class_id = s.class_id 
                               WHERE s.student_id = '$student_id' AND s.status='1'");
@@ -27,7 +27,7 @@ if ($classes_query->num_rows > 0) {
             $search_condition = "AND (
                 a.assessment_name LIKE '%$search_query%' 
                 OR a.topic LIKE '%$search_query%'
-                OR c.subject LIKE '%$search_query%'
+                OR c.course_name LIKE '%$search_query%'
             )";
         }
 
@@ -50,7 +50,7 @@ if ($classes_query->num_rows > 0) {
             $has_results = false;
             
             echo '<div class="content-separator">';
-            echo '<span class="content-name">' . htmlspecialchars($class['subject']) . '</span>';
+            echo '<span class="content-name">' . htmlspecialchars($class['course_name']) . '</span>';
             echo '<hr class="separator-line">';
             echo '</div>';
             
@@ -80,11 +80,11 @@ if ($classes_query->num_rows > 0) {
             
             if (!$has_results) {
                 if (empty($query)) {
-                    echo '<div class="no-records">No ' . $type . ' yet for ' . htmlspecialchars($class['subject']) . '</div>';
+                    echo '<div class="no-records">No ' . $type . ' yet for ' . htmlspecialchars($class['course_name']) . '</div>';
                 }
             }
         } else if (empty($query)) {
-            echo '<div class="no-records">No ' . $type . ' yet for ' . htmlspecialchars($class['subject']) . '</div>';
+            echo '<div class="no-records">No ' . $type . ' yet for ' . htmlspecialchars($class['course_name']) . '</div>';
         }
     }
 } else {

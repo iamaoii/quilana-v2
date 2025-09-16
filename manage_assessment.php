@@ -11,10 +11,10 @@ if (!isset($_GET['assessment_id'])) {
 $assessment_id = intval($_GET['assessment_id']);
 
 // Fetch assessment details
-$query = "SELECT a.assessment_name, a.assessment_type, a.assessment_mode, c.course_name, a.subject, a.time_limit, a.passing_rate,
-          a.max_points, a.max_warnings, a.student_count, a.remaining_points
+$query = "SELECT a.assessment_name, a.assessment_type, a.assessment_mode, a.course_name, a.time_limit, a.passing_rate,
+          a.max_points, a.max_warnings, a.student_count, a.remaining_points, p.program_name
           FROM assessment a
-          JOIN course c ON a.course_id = c.course_id
+          JOIN program p ON a.program_id = p.program_id
           WHERE a.assessment_id = ?";
 
 if ($stmt = $conn->prepare($query)) {
@@ -28,7 +28,7 @@ if ($stmt = $conn->prepare($query)) {
         $assessment_type_code = htmlspecialchars($row['assessment_type']);
         $assessment_mode_code = htmlspecialchars($row['assessment_mode']);
         $course_name = htmlspecialchars($row['course_name']);
-        $subject_name = htmlspecialchars($row['subject']);
+        $program_name = htmlspecialchars($row['program_name']);
         $assessment_time_limit = $row['time_limit'];
         $assessment_passing_rate = $row['passing_rate'];
         $assessment_max_points = $row['max_points'];
@@ -178,7 +178,7 @@ if ($stmt = $conn->prepare($query)) {
             <div class="assessment-details">
                 <h2><?php echo $assessment_name; ?></h2>
                 <p><strong>Assessment Mode:</strong> <?php echo $assessment_mode; ?></p>
-                <p><strong>Course and Subject:</strong> <?php echo $course_name; ?> - <?php echo $subject_name; ?></p>
+                <p><strong>Program and Course Name:</strong> <?php echo $program_name; ?> - <?php echo $course_name; ?></p>
                 <?php if ($assessment_mode_code == 1): ?>
                     <p><strong>Time Limit:</strong> 
                         <span id="current-time-limit"><?php echo isset($assessment_time_limit) && $assessment_time_limit > 0 ? $assessment_time_limit . ' minutes': 'Not set'; ?></span>

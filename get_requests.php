@@ -3,7 +3,7 @@ session_start(); // Ensure session is started
 include 'db_connect.php'; // Include your database connection file
 
 $qry = $conn->query("
-    SELECT s.student_id, CONCAT(s.lastname, ', ', s.firstname) AS student_name, c.class_id, c.faculty_id, c.class_name, c.subject, se.status
+    SELECT s.student_id, CONCAT(s.lastname, ', ', s.firstname) AS student_name, c.class_id, c.faculty_id, c.class_name, c.course_name, se.status
     FROM student s
     JOIN student_enrollment se ON s.student_id = se.student_id
     JOIN class c ON se.class_id = c.class_id
@@ -19,9 +19,9 @@ if ($qry->num_rows > 0) {
         $student_name = htmlspecialchars($row['student_name']);
         $class_id = htmlspecialchars($row['class_id']);
         $class_name = htmlspecialchars($row['class_name']);
-        $subject = htmlspecialchars($row['subject']);
+        $course_name = htmlspecialchars($row['course_name']);
         $status = htmlspecialchars($row['status']);
-        $classSub = $class_name . ' (' . $subject . ')';
+        $classSub = $class_name . ' (' . $course_name . ')';
         
         if ($class_name !== $current_class) {
             if ($current_class !== '') {
@@ -29,7 +29,7 @@ if ($qry->num_rows > 0) {
             }
             $current_class = $class_name;
             echo '<div class="class-header">';
-            echo '<span>' . $class_name . ' ( ' . $subject . ' )</span>';
+            echo '<span>' . $class_name . ' ( ' . $course_name . ' )</span>';
             echo '<div class="line"></div>';
             echo '</div><div class="student-list">';
         }

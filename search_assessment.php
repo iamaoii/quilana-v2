@@ -4,15 +4,15 @@ include 'db_connect.php';
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 $faculty_id = isset($_GET['faculty_id']) ? $_GET['faculty_id'] : '';
 
-$sql = "SELECT a.*, c.course_name 
+$sql = "SELECT a.*, p.program_name 
         FROM assessment a 
-        JOIN course c ON a.course_id = c.course_id 
+        JOIN program p ON a.program_id = p.program_id 
         WHERE a.faculty_id = ? 
         AND (a.assessment_name LIKE ? 
-            OR a.subject LIKE ? 
+            OR a.course_name LIKE ? 
             OR a.topic LIKE ?
-            OR c.course_name LIKE ?)
-        ORDER BY c.course_name, a.subject, a.assessment_name ASC";
+            OR p.program_name LIKE ?)
+        ORDER BY p.program_name, a.course_name, a.assessment_name ASC";
 
 $stmt = $conn->prepare($sql);
 $searchTerm = "%" . $query . "%";
@@ -21,38 +21,38 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 $output = '';
-$current_course = '';
-$current_subject = '';
+$current_program = '';
+$current_course_name = '';
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
+        $program_name = htmlspecialchars($row['program_name']);
         $course_name = htmlspecialchars($row['course_name']);
-        $subject_name = htmlspecialchars($row['subject']);
         $assessment_name = htmlspecialchars($row['assessment_name']);
         $topic = htmlspecialchars($row['topic']);
         $assessment_id = $row['assessment_id'];
 
-        // Start new course section if course changes
-        if ($course_name !== $current_course) {
-            if ($current_course !== '') {
+        // Start new program section if program changes
+        if ($program_name !== $current_program) {
+            if ($current_program !== '') {
                 $output .= '</div></div>';
             }
-            $output .= '<div class="course-section"><h2>' . $course_name . '</h2>';
-            $current_course = $course_name;
-            $current_subject = '';
+            $output .= '<div class="program-section"><h2>' . $program_name . '</h2>';
+            $current_program = $program_name;
+            $current_course_name = '';
         }
 
-        // Start new subject section if subject changes
-        if ($subject_name !== $current_subject) {
-            if ($current_subject !== '') {
+        // Start new course_name section if course_name changes
+        if ($course_name !== $current_course_name) {
+            if ($current_course_name !== '') {
                 $output .= '</div>';
             }
             $output .= '<div class="content-separator">
-                        <span class="content-name">' . $subject_name . '</span>
+                        <span class="content-name">' . $course_name . '</span>
                         <hr class="separator-line">
                     </div>
                     <div class="assessment-container">';
-            $current_subject = $subject_name;
+            $current_course_name = $course_name;
         }
 
         // Add assessment card
@@ -71,7 +71,7 @@ if ($result->num_rows > 0) {
                         <a href="#" class="delete_assessment" 
                             data-id="' . $assessment_id . '"
                             data-name="' . $assessment_name . '"
-                            data-subject="' . $subject_name . '">
+                            data-course-name="' . $course_name . '">
                             <span class="material-symbols-outlined">delete</span>
                             Delete
                         </a>
@@ -82,9 +82,9 @@ if ($result->num_rows > 0) {
                 <div class="assessment-actions">
                     <a id="manage" class="tertiary-button" href="manage_assessment.php?assessment_id=' . $assessment_id . '">Manage</a>
                     <button id="administer" class="main-button" 
-                        data-course-id="' . $row['course_id'] . '" 
-                        data-course-name="' . $row['course_name'] . '" 
-                        data-subject="' . htmlspecialchars($row['subject']) . '" 
+                        data-program-id="' . $row['program_id'] . '" 
+                        data-program-name="' . $row['program_name'] . '" 
+                        data-course-name="' . htmlspecialchars($row['course_name']) . '" 
                         data-mode="' . htmlspecialchars($row['assessment_mode']) . '" 
                         data-id="' . $row['assessment_id'] . '"
                         data-assessment-name="' . htmlspecialchars($row['assessment_name']) . '">
@@ -96,7 +96,7 @@ if ($result->num_rows > 0) {
     }
     
     // Close the last containers
-    if ($current_course !== '') {
+    if ($current_program !== '') {
         $output .= '</div></div>';
     }
 } else {

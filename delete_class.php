@@ -5,7 +5,7 @@ include('auth.php');
 if(isset($_POST['class_id'])){
     $class_id = $_POST['class_id'];
     $faculty_id = $_POST['faculty_id'];
-    $course_id = $_POST['course_id'];
+    $program_id = $_POST['program_id']; // Renamed from course_id
 
     // Start transaction
     $conn->begin_transaction();

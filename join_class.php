@@ -17,7 +17,7 @@ $code = $conn->real_escape_string($_POST['get_code']);
 $student_id = $_SESSION['login_id'];
 
 // Query to find the class based on the provided code
-$class_query = $conn->query("SELECT c.class_id, c.subject, f.firstname, f.lastname 
+$class_query = $conn->query("SELECT c.class_id, c.course_name, f.firstname, f.lastname 
                              FROM class c 
                              JOIN faculty f ON c.faculty_id = f.faculty_id 
                              WHERE c.code = '$code'");

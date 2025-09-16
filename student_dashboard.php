@@ -110,8 +110,9 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
                 <h1> Recents </h1>
                 <div class="recent-scrollable">
                     <?php
+                    // Recent Assessments
                     $result = $conn->query("
-                        SELECT a.assessment_name, a.assessment_type, c.class_name, c.subject, ss.date_taken
+                        SELECT a.assessment_name, a.assessment_type, c.class_name, c.course_name, ss.date_taken
                         FROM student_results sr
                         JOIN student_submission ss ON sr.submission_id = ss.submission_id
                         JOIN assessment a ON sr.assessment_id = a.assessment_id
@@ -128,7 +129,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
                             $assessmentName = htmlspecialchars($row['assessment_name']);
                             $assessmentType = htmlspecialchars($row['assessment_type']);
                             $className = htmlspecialchars($row['class_name']);
-                            $subjectName = htmlspecialchars($row['subject']);
+                            $courseName = htmlspecialchars($row['course_name']);
                             $dateTaken = date("Y-m-d", strtotime($row['date_taken']));
 
                             // Divider by date_taken
@@ -150,7 +151,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
                                     echo "<img class='icons' src='image/{$icon}' alt='" . (($assessmentType == 1) ? 'Quiz' : 'Exam') . " Icon'>";
                                     echo "<div id='recent-details' class='card-data'>";
                                         echo "<h3>{$assessmentName}</h3>";
-                                        echo "<label>{$className} ({$subjectName})</label>";
+                                        echo "<label>{$className} ({$courseName})</label>";
                                     echo "</div>";    
                                 echo "</div>";
                             echo "</div>";
@@ -198,7 +199,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
 
                             // Fetch today's scheduled assessment details
                             $todayAssessments = $conn->query("
-                                SELECT a.assessment_name, c.class_name, a.subject
+                                SELECT a.assessment_name, c.class_name, c.course_name
                                 FROM assessment a
                                 JOIN schedule_assessments sa ON a.assessment_id = sa.assessment_id
                                 JOIN class c ON sa.class_id = c.class_id
@@ -216,7 +217,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
                                     $row = $todayAssessments->fetch_assoc();
                                     echo "<div class='schedule-item'>";
                                     echo "<h3>" . htmlspecialchars($row['assessment_name']) . "</h3>";
-                                    echo "<p>" . htmlspecialchars($row['class_name']) . " (" . htmlspecialchars($row['subject']) . ")</p>";
+                                    echo "<p>" . htmlspecialchars($row['class_name']) . " (" . htmlspecialchars($row['course_name']) . ")</p>";
                                     echo "</div>";
                                 // If there are more than one assessment
                                 } else {
@@ -241,7 +242,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
                     <?php 
                     // Fetch all scheduled assessments details
                     $assessment = $conn->query("
-                        SELECT a.assessment_name, c.class_name, a.subject, sa.date_scheduled
+                        SELECT a.assessment_name, c.class_name, c.course_name, sa.date_scheduled
                         FROM assessment a
                         JOIN schedule_assessments sa on a.assessment_id = sa.assessment_id
                         JOIN class c ON sa.class_id = c.class_id
@@ -267,7 +268,7 @@ while ($schedule_row = $scheduleQuery->fetch_assoc()) {
 
                             echo "<div class='schedule-item'>";
                             echo "<h3>" . htmlspecialchars($row['assessment_name']) . "</h3>";
-                            echo "<p>" . htmlspecialchars($row['class_name']) . " (" . htmlspecialchars($row['subject']) . ")</p>";
+                            echo "<p>" . htmlspecialchars($row['class_name']) . " (" . htmlspecialchars($row['course_name']) . ")</p>";
                             echo "</div>";
                         }
                     } else {

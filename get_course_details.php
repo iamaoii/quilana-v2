@@ -2,26 +2,26 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="assets/css/custom-tables.css" />
-    <title>Course Details</title>
+    <title>Program Details</title>
 </head>
 <body>
     <?php
     include('db_connect.php');
 
-    if (isset($_GET['course_id'])) {
-        $course_id = $conn->real_escape_string($_GET['course_id']);
+    if (isset($_GET['program_id'])) {
+        $program_id = $conn->real_escape_string($_GET['program_id']);
 
-        // Fetch the course details
-        $qry_course = $conn->query("SELECT course_name FROM course WHERE course_id = '$course_id'");
-        if ($qry_course->num_rows > 0) {
-            $course = $qry_course->fetch_assoc();
-            echo "<h4><strong>{$course['course_name']}</strong></h4>";
+        // Fetch the program details
+        $qry_program = $conn->query("SELECT program_name FROM program WHERE program_id = '$program_id'");
+        if ($qry_program->num_rows > 0) {
+            $program = $qry_program->fetch_assoc();
+            echo "<h4><strong>{$program['program_name']}</strong></h4>";
         } else {
-            echo "<p><strong>Course not found.</strong></p>";
+            echo "<p><strong>Program not found.</strong></p>";
         }
 
-        // Fetch the class details associated with the course
-        $qry_class = $conn->query("SELECT * FROM class WHERE course_id = '$course_id' ORDER BY class_name");
+        // Fetch the class details associated with the program
+        $qry_class = $conn->query("SELECT * FROM class WHERE program_id = '$program_id' ORDER BY class_name");
 
         // Display the table
         echo '<div class="table-wrapper">
@@ -29,7 +29,7 @@
                     <thead>
                         <tr>
                             <th>Class Name</th>
-                            <th>Course Subject</th>
+                            <th>Course Name</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -40,7 +40,7 @@
 
                 echo '<tr>
                         <td>' . $class['class_name'] . '</td>
-                        <td>' . $class['subject'] . '</td>
+                        <td>' . $class['course_name'] . '</td>
                         <td>' ?> <button id="viewClassDetails" class="btn btn-primary btn-sm view_class_details action_vcd" data-id="<?php echo $class['class_id']?>"  type="button">View Class</button> <?php '</td>
                     </tr>';
             }
@@ -53,7 +53,7 @@
 
         echo '</tbody></table></div>';
     } else {
-        echo "<p>No course ID provided.</p>";
+        echo "<p>No program ID provided.</p>";
     }
 
     $conn->close();

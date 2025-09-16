@@ -57,7 +57,7 @@
                 $student_id = $_SESSION['login_id'];
 
                 // Fetch student's enrolled classes
-                $classes_query = $conn->query("SELECT c.class_id, c.subject 
+                $classes_query = $conn->query("SELECT c.class_id, c.course_name 
                                                 FROM class c 
                                                 JOIN student_enrollment s ON c.class_id = s.class_id 
                                                 WHERE s.student_id = '$student_id' AND s.status='1'");
@@ -65,7 +65,7 @@
                 if ($classes_query->num_rows > 0) {
                     while ($class = $classes_query->fetch_assoc()) {
                         echo '<div class="content-separator">';
-                        echo '<span class="content-name">' . htmlspecialchars($class['subject']) . '</span>';
+                        echo '<span class="content-name">' . htmlspecialchars($class['course_name']) . '</span>';
                         echo '<hr class="separator-line">';
                         echo '</div>';
 
@@ -107,12 +107,12 @@
                         
                             // If no quizzes have results yet
                             if (!$has_results) {
-                                echo '<div class="no-records">No quizzes yet for ' . htmlspecialchars($class['subject']) . '</div>';
+                                echo '<div class="no-records">No quizzes yet for ' . htmlspecialchars($class['course_name']) . '</div>';
                             }
 
                         // If there are no quizzes at all    
                         } else {
-                            echo '<div class="no-records">No quizzes yet for ' . htmlspecialchars($class['subject']) . '</div>';
+                            echo '<div class="no-records">No quizzes yet for ' . htmlspecialchars($class['course_name']) . '</div>';
                         }
                     }
                 } else {
@@ -127,7 +127,7 @@
                 <div class="assessments-container">
                 <?php
                 // Fetch student's enrolled classes
-                $classes_query = $conn->query("SELECT c.class_id, c.subject 
+                $classes_query = $conn->query("SELECT c.class_id, c.course_name 
                                                 FROM class c 
                                                 JOIN student_enrollment s ON c.class_id = s.class_id 
                                                 WHERE s.student_id = '$student_id' AND s.status='1'");
@@ -135,7 +135,7 @@
                 if ($classes_query->num_rows > 0) {
                     while ($class = $classes_query->fetch_assoc()) {
                         echo '<div class="content-separator">';
-                        echo '<span class="content-name">' . htmlspecialchars($class['subject']) . '</span>';
+                        echo '<span class="content-name">' . htmlspecialchars($class['course_name']) . '</span>';
                         echo '<hr class="separator-line">';
                         echo '</div>';
 
@@ -175,10 +175,10 @@
                             echo '</div>';
 
                             if (!$has_results) {
-                                echo '<div class="no-records">No exams yet for ' . htmlspecialchars($class['subject']) . '</div>';
+                                echo '<div class="no-records">No exams yet for ' . htmlspecialchars($class['course_name']) . '</div>';
                             } 
                         } else {
-                            echo '<div class="no-records">No exams yet for ' . htmlspecialchars($class['subject']) . '</div>';
+                            echo '<div class="no-records">No exams yet for ' . htmlspecialchars($class['course_name']) . '</div>';
                         }
                     }
                 } else {
