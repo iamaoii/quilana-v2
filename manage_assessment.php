@@ -33,8 +33,8 @@ if ($stmt = $conn->prepare($query)) {
         $assessment_passing_rate = $row['passing_rate'];
         $assessment_max_points = $row['max_points'];
         $assessment_max_warnings = $row['max_warnings'];
-        $assessment_student_count= $row['student_count'];
-        $assessment_remaining_points= $row['remaining_points'];
+        $assessment_student_count = $row['student_count'];
+        $assessment_remaining_points = $row['remaining_points'];
 
         $assessment_type = ($assessment_type_code == 1) ? 'Quiz' : 'Exam';
 
@@ -311,7 +311,7 @@ if ($stmt = $conn->prepare($query)) {
                 <div class="modal-header">
                     <h4 class="modal-title" id="manageQuestionLabel">Add New Question</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
+                </div>
                 <form id="question-frm">
                     <div class="modal-body">
                         <div id="msg"></div>
@@ -421,11 +421,11 @@ if ($stmt = $conn->prepare($query)) {
                         </div>
                         <div class="form-group">
                             <label for="assessment_passing_rate">Passing Rate (%)</label>
-                            <input type="number" id="assessment_passing_rate" name="passing_rate"  min="0" max="100" class="form-control" required>
+                            <input type="number" id="assessment_passing_rate" name="passing_rate" min="0" max="100" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="assessment_max_warnings">Maximum Warnings:</label>
-                            <input type="number" id="assessment_max_warnings" name="max_warnings"  min="0" max="100" class="form-control" required>
+                            <input type="number" id="assessment_max_warnings" name="max_warnings" min="0" max="100" class="form-control" required>
                         </div>
                     </form>
                 </div>
@@ -449,11 +449,11 @@ if ($stmt = $conn->prepare($query)) {
                     <form id="edit-speedmode-form">
                         <div class="form-group">
                             <label for="speedmode_passing_rate">Passing Rate (%):</label>
-                            <input type="number" class="form-control" id="speedmode_passing_rate" name="passing_rate"  min="0" max="100" required>
+                            <input type="number" class="form-control" id="speedmode_passing_rate" name="passing_rate" min="0" max="100" required>
                         </div>
                         <div class="form-group">
                             <label for="assessment_max_warnings">Maximum Warnings:</label>
-                            <input type="number" id="assessment_max_warnings" name="max_warnings"  min="0" max="100" class="form-control" required>
+                            <input type="number" id="assessment_max_warnings" name="max_warnings" min="0" max="100" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="assessment_max_points">Maximum Points:</label>
@@ -469,7 +469,7 @@ if ($stmt = $conn->prepare($query)) {
                         </div>
                         <div class="form-group">
                             <label for="assessment_max_warnings">Maximum Warnings</label>
-                            <input type="number" class="form-control" id="speedmode_max_warnings" name="speedmode_max_warnings"  min="0" max="100" required>
+                            <input type="number" class="form-control" id="speedmode_max_warnings" name="speedmode_max_warnings" min="0" max="100" required>
                         </div>
                     </form>
                 </div>
@@ -499,7 +499,7 @@ if ($stmt = $conn->prepare($query)) {
                         </div>
                         <div class="form-group">
                             <label for="quizbee_max_warnings">Maximum Warnings:</label>
-                            <input type="number" id="quizbee_max_warnings" name="max_warnings"  min="0" max="100" class="form-control" required>
+                            <input type="number" id="quizbee_max_warnings" name="max_warnings" min="0" max="100" class="form-control" required>
                         </div>
                     </form>
                 </div>
@@ -510,8 +510,6 @@ if ($stmt = $conn->prepare($query)) {
             </div>
         </div>
     </div>
-
-
 
     <script>
     $(document).ready(function() {
@@ -712,36 +710,33 @@ if ($stmt = $conn->prepare($query)) {
                     `;
                     $('#' + data.question_type + '_options .form-group').append(newOption);
                 });
-            } 
-            else if (data.question_type === 'true_false') {
+            } else if (data.question_type === 'true_false') {
                 $('input[name="tf_answer"]').prop('checked', false);
-                    if (Array.isArray(data.options) && data.options.length === 2) {
-                        const trueOption = data.options[0].option_txt; 
-                        const falseOption = data.options[1].option_txt; 
-                        
-                        const answer = data.options[0].is_right ? trueOption : falseOption;
-
+                if (Array.isArray(data.options) && data.options.length === 2) {
+                    const correctOption = data.options.find(opt => opt.is_right === 1);
+                    if (correctOption) {
+                        const answer = correctOption.option_txt.toLowerCase();
                         $(`input[name="tf_answer"][value="${answer}"]`).prop('checked', true);
                     } else {
-                        console.warn('Options are not valid for true_false:', data.options);
+                        console.warn('No correct option found for true_false:', data.options);
                     }
-                    } 
-            else if (data.question_type === 'identification') {
-                    if (data.answer !== undefined) {
-                        $('#identification_answer').val(data.answer);
-                    } else {
-                        console.warn('Answer is not defined for identification:', data.answer);
-                    }
-                } 
-            else if (data.question_type === 'fill_blank') {
-                    if (data.answer !== undefined) {
-                        $('#fill_blank_answer').val(data.answer);
-                    } else {
-                        console.warn('Answer is not defined for fill_blank:', data.answer);
-                    }
+                } else {
+                    console.warn('Options are not valid for true_false:', data.options);
+                }
+            } else if (data.question_type === 'identification') {
+                if (data.answer !== undefined) {
+                    $('#identification_answer').val(data.answer);
+                } else {
+                    console.warn('Answer is not defined for identification:', data.answer);
+                }
+            } else if (data.question_type === 'fill_blank') {
+                if (data.answer !== undefined) {
+                    $('#fill_blank_answer').val(data.answer);
+                } else {
+                    console.warn('Answer is not defined for fill_blank:', data.answer);
                 }
             }
-
+        }
 
         // Add question button handler (for new questions)
         $(document).on('click', '#add_question_btn', function() {
@@ -784,8 +779,8 @@ if ($stmt = $conn->prepare($query)) {
             });
         });
 
-                // Edit question button handler
-                $(document).on('click', '.edit_question', function() {
+        // Edit question button handler
+        $(document).on('click', '.edit_question', function() {
             var questionId = $(this).data('id');
 
             // Fetch question details for editing
@@ -891,25 +886,23 @@ if ($stmt = $conn->prepare($query)) {
             });
         });
 
-
         // Edit Speed Mode Details button handler
         $('#edit_speedmode_details_btn').click(function() {
-                var currentPassingRate = $('#speedmode-passing-rate').text();
-                var currentMaxPoints = $('#current-max-points').text();
-                var currentStudentCount = $('#current-student-count').text();
-                var currentRemainingPoints = $('#current-remaining-points').text();
+            var currentPassingRate = $('#speedmode-passing-rate').text();
+            var currentMaxPoints = $('#current-max-points').text();
+            var currentStudentCount = $('#current-student-count').text();
+            var currentRemainingPoints = $('#current-remaining-points').text();
 
-                $('#speedmode_passing_rate').val(currentPassingRate !== 'Not set' ? currentPassingRate : '');
-                $('#assessment_max_points').val(currentMaxPoints !== 'Not set' ? currentMaxPoints : '');
-                $('#assessment_student_count').val(currentStudentCount !== 'Not set' ? currentStudentCount : '');
-                $('#assessment_remaining_points').val(currentRemainingPoints !== 'Not set' ? currentRemainingPoints : '');
+            $('#speedmode_passing_rate').val(currentPassingRate !== 'Not set' ? currentPassingRate : '');
+            $('#assessment_max_points').val(currentMaxPoints !== 'Not set' ? currentMaxPoints : '');
+            $('#assessment_student_count').val(currentStudentCount !== 'Not set' ? currentStudentCount : '');
+            $('#assessment_remaining_points').val(currentRemainingPoints !== 'Not set' ? currentRemainingPoints : '');
 
-                $('#edit_speedmode_modal').modal('show');
-            });
+            $('#edit_speedmode_modal').modal('show');
+        });
 
-            // Save Speed Mode Details button handler
-            $('#save_speed_mode').click(function() {
-
+        // Save Speed Mode Details button handler
+        $('#save_speed_mode').click(function() {
             var passingRate = $('#speedmode_passing_rate').val();
             var maxPoints = $('#assessment_max_points').val();
             var studentCount = $('#assessment_student_count').val();
@@ -949,7 +942,8 @@ if ($stmt = $conn->prepare($query)) {
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX Error: " + status + ": " + error);
-                    alert('An error occurred while updating speed mode details. Please try again.') }
+                    alert('An error occurred while updating speed mode details. Please try again.');
+                }
             });
         });
 
@@ -1001,7 +995,6 @@ if ($stmt = $conn->prepare($query)) {
             });
         });
 
-
         // Function to handle assessment mode change
         function handleAssessmentModeChange() {
             var mode = '<?php echo $assessment_mode_code; ?>'; 
@@ -1016,7 +1009,7 @@ if ($stmt = $conn->prepare($query)) {
                 $('#time_limit').prop('required', false); 
                 $('#points_container').hide(); 
                 $('#points').prop('required', false); 
-            } else { //Normal Mode
+            } else { // Normal Mode
                 $('#time_limit_container').hide(); 
                 $('#time_limit').prop('required', false); 
                 $('#points_container').show(); 
@@ -1028,9 +1021,7 @@ if ($stmt = $conn->prepare($query)) {
         $(document).ready(function() {
             handleAssessmentModeChange(); 
         });
-
     });
-
-</script>
+    </script>
 </body>
 </html>

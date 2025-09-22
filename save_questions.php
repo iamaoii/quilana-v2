@@ -125,41 +125,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
                 break;
 
-                case 'true_false':
-                    $correct_option = $_POST['tf_answer'] ?? '';
-                    $options = ['true', 'false'];
-                    
-                    // Check for existing options
-                    $existing_options_query = "SELECT option_txt, option_id FROM question_options WHERE question_id = ?";
-                    $existing_options_stmt = $conn->prepare($existing_options_query);
-                    $existing_options_stmt->bind_param("i", $question_id);
-                    $existing_options_stmt->execute();
-                    $existing_options_result = $existing_options_stmt->get_result();
-                
-                    $existing_options = [];
-                    while ($row = $existing_options_result->fetch_assoc()) {
-                        $existing_options[$row['option_txt']] = $row['option_id'];
+            case 'true_false':
+                $correct_option = $_POST['tf_answer'] ?? '';
+                if (empty($correct_option)) {
+                    throw new Exception('Correct answer for True or False is required.');
+                }
+
+                $options = ['True', 'False']; // Use title case to match import
+
+                // Check for existing options
+                $existing_options_query = "SELECT option_txt, option_id FROM question_options WHERE question_id = ?";
+                $existing_options_stmt = $conn->prepare($existing_options_query);
+                $existing_options_stmt->bind_param("i", $question_id);
+                $existing_options_stmt->execute();
+                $existing_options_result = $existing_options_stmt->get_result();
+
+                $existing_options = [];
+                while ($row = $existing_options_result->fetch_assoc()) {
+                    $existing_options[$row['option_txt']] = $row['option_id'];
+                }
+
+                foreach ($options as $option) {
+                    $is_correct = (strtolower($option) === $correct_option) ? 1 : 0;
+
+                    if (isset($existing_options[$option])) {
+                        // Update existing option
+                        $option_id = $existing_options[$option];
+                        $update_option_query = "UPDATE question_options SET is_right = ? WHERE option_id = ?";
+                        $update_stmt = $conn->prepare($update_option_query);
+                        $update_stmt->bind_param("ii", $is_correct, $option_id);
+                        $update_stmt->execute();
+                    } else {
+                        // Insert new option
+                        $insert_option_query = "INSERT INTO question_options (option_txt, is_right, question_id) VALUES (?, ?, ?)";
+                        $insert_stmt = $conn->prepare($insert_option_query);
+                        $insert_stmt->bind_param("sii", $option, $is_correct, $question_id);
+                        $insert_stmt->execute();
                     }
-                
-                    foreach ($options as $option) {
-                        $is_correct = ($option === $correct_option) ? 1 : 0;
-                
-                        if (isset($existing_options[$option])) {
-                            // Update existing option
-                            $option_id = $existing_options[$option];
-                            $update_option_query = "UPDATE question_options SET is_right = ? WHERE option_id = ?";
-                            $update_stmt = $conn->prepare($update_option_query);
-                            $update_stmt->bind_param("ii", $is_correct, $option_id);
-                            $update_stmt->execute();
-                        } else {
-                            // Insert new option
-                            $insert_option_query = "INSERT INTO question_options (option_txt, is_right, question_id) VALUES (?, ?, ?)";
-                            $insert_stmt = $conn->prepare($insert_option_query);
-                            $insert_stmt->bind_param("sii", $option, $is_correct, $question_id);
-                            $insert_stmt->execute();
-                        }
-                    }
-                    break;
+                }
+                break;
 
             case 'identification':
             case 'fill_blank':
@@ -205,3 +209,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $conn->close();
 }
+?>
