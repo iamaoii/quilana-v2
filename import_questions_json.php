@@ -78,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['json_file'])) {
         switch ($ques_type) {
             case 1: // Multiple Choice
             case 2: // Checkbox
-            case 3: // True or False
                 if (!empty($q['options'])) {
                     foreach ($q['options'] as $opt) {
                         $is_right = (is_array($q['correct_answer']) && in_array($opt, $q['correct_answer'])) ||
@@ -88,6 +87,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['json_file'])) {
                         $opt_stmt->execute();
                         $opt_stmt->close();
                     }
+                }
+                break;
+
+            case 3: // True or False
+                $options = ['True', 'False'];
+                foreach ($options as $opt) {
+                    $is_right = (strtolower($q['correct_answer']) === strtolower($opt)) ? 1 : 0;
+                    $opt_stmt = $conn->prepare("INSERT INTO question_options (option_txt, is_right, question_id) VALUES (?, ?, ?)");
+                    $opt_stmt->bind_param("sii", $opt, $is_right, $question_id);
+                    $opt_stmt->execute();
+                    $opt_stmt->close();
                 }
                 break;
 

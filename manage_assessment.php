@@ -310,8 +310,10 @@ if ($stmt = $conn->prepare($query)) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="manageQuestionLabel">Add New Question</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <form id="question-frm">
                     <div class="modal-body">
                         <div id="msg"></div>
@@ -715,17 +717,21 @@ if ($stmt = $conn->prepare($query)) {
             } 
             else if (data.question_type === 'true_false') {
                 $('input[name="tf_answer"]').prop('checked', false);
-                    if (Array.isArray(data.options) && data.options.length === 2) {
-                        const trueOption = data.options[0].option_txt; 
-                        const falseOption = data.options[1].option_txt; 
-                        
-                        const answer = data.options[0].is_right ? trueOption : falseOption;
-
-                        $(`input[name="tf_answer"][value="${answer}"]`).prop('checked', true);
+                if (Array.isArray(data.options) && data.options.length >= 1) {
+                    // Find the option marked as correct
+                    const rightOption = data.options.find(opt => opt.is_right);
+                    if (rightOption) {
+                        // Map option text to the radio value ('true' or 'false').
+                        // Use a lowercase check on option text to be robust to casing.
+                        const val = String(rightOption.option_txt).toLowerCase().includes('true') ? 'true' : 'false';
+                        $(`input[name="tf_answer"][value="${val}"]`).prop('checked', true);
                     } else {
-                        console.warn('Options are not valid for true_false:', data.options);
+                        console.warn('No option marked as correct for true_false:', data.options);
                     }
-                    } 
+                } else {
+                    console.warn('Options are not valid for true_false:', data.options);
+                }
+            } 
             else if (data.question_type === 'identification') {
                     if (data.answer !== undefined) {
                         $('#identification_answer').val(data.answer);
@@ -784,8 +790,8 @@ if ($stmt = $conn->prepare($query)) {
             });
         });
 
-                // Edit question button handler
-                $(document).on('click', '.edit_question', function() {
+        // Edit question button handler
+        $(document).on('click', '.edit_question', function() {
             var questionId = $(this).data('id');
 
             // Fetch question details for editing
