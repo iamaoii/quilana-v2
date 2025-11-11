@@ -228,9 +228,6 @@ if ($stmt = $conn->prepare($query)) {
                     <button class="btn btn-primary" id="add_question_btn">
                         <i class="fa fa-plus"></i> Add Question
                     </button>
-                    <button class="btn btn-success" id="export_questions_json_btn">
-                        <i class="fa fa-download"></i> Export Questions
-                    </button>
                     <button class="btn btn-warning" id="import_questions_json_btn">
                         <i class="fa fa-upload"></i> Import Questions
                     </button>
@@ -758,11 +755,6 @@ if ($stmt = $conn->prepare($query)) {
             $('input[name="id"]').val(''); 
             $('#manageQuestionLabel').text('Add New Question');
             $('#manage_question').modal('show');
-        });
-
-        // Export questions as JSON
-        $('#export_questions_json_btn').click(function(){
-            window.location.href = 'export_questions_json.php?assessment_id=<?php echo $assessment_id; ?>'
         });
 
         // Import questions from JSON
